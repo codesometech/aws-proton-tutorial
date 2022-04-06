@@ -291,7 +291,28 @@ Resources:
         - '{{environment.outputs.PublicSubnetOne}}'
         - '{{environment.outputs.PublicSubnetTwo}}'
       SecurityGroups: [!Ref 'PublicLoadBalancerSG']
-
+  
+  ECSTaskRole:
+      Type: AWS::IAM::Role
+      Properties:
+          AssumeRolePolicyDocument:
+              Statement:
+              - Effect: Allow
+                Principal:
+                   Service: [ecs-tasks.amazonaws.com]
+                Action: ['sts:AssumeRole']
+          Path: /
+          Policies:
+              - PolicyName: SSMMessagesPolicy
+                PolicyDocument:
+                  Statement:
+                      - Effect: Allow
+                        Action:
+                          - 'ssmmessages:CreateControlChannel'
+                          - 'ssmmessages:CreateDataChannel'
+                          - 'ssmmessages:OpenControlChannel'
+                          - 'ssmmessages:OpenDataChannel'
+                        Resource: '*'
   PublicLoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     DependsOn:
